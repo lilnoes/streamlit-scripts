@@ -42,7 +42,7 @@ original_df = st.session_state.original_df
 url_input = st.text_input("Download from URL (optional)")
 if st.button("Download from URL") and url_input:
     try:
-        df = pd.read_json(url_input, lines=True)
+        df = pd.read_json(url_input, lines=True, dtype=object, convert_dates=False)
         original_df = df.copy()
         st.toast(f"Successfully downloaded data from URL")
         st.session_state.df = df
@@ -56,7 +56,7 @@ category_key = st.text_input("Category key", value="metadata.sub_category")
 to_validate_key = st.text_input("Verification key (Latex)", value="verification")
 
 if uploaded_file is not None:
-    df = pd.read_json(uploaded_file, lines=True)
+    df = pd.read_json(uploaded_file, lines=True, dtype=object, convert_dates=False)
     original_df = df.copy()
     st.session_state.df = df
     st.session_state.original_df = original_df
