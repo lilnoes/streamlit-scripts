@@ -30,9 +30,14 @@ def validate_text(text):
 
 st.title("Remove IDs from export")
 
+if "df" not in st.session_state:
+    st.session_state.df = None
+if "original_df" not in st.session_state:
+    st.session_state.original_df = None
 
-df = None
-original_df = None
+df = st.session_state.df
+original_df = st.session_state.original_df
+
 
 url_input = st.text_input("Download from URL (optional)")
 if st.button("Download from URL") and url_input:
@@ -40,6 +45,8 @@ if st.button("Download from URL") and url_input:
         df = pd.read_json(url_input, lines=True)
         original_df = df.copy()
         st.toast(f"Successfully downloaded data from URL")
+        st.session_state.df = df
+        st.session_state.original_df = original_df
     except Exception as e:
         st.error(f"Error downloading from URL: {str(e)}")
 
@@ -51,6 +58,8 @@ to_validate_key = st.text_input("Verification key (Latex)", value="verification"
 if uploaded_file is not None:
     df = pd.read_json(uploaded_file, lines=True)
     original_df = df.copy()
+    st.session_state.df = df
+    st.session_state.original_df = original_df
 
 col1, col2 = st.columns(2)
 with col1:
@@ -67,6 +76,7 @@ with col1:
                 df = df[~df[id_key].isin(ids_to_remove)]
                 st.toast(f"Removed {len(ids_to_remove)} IDs")
                 st.write(f"Found and removed {len(ids_to_remove)} IDs")
+                st.session_state.df = df
             else:
                 st.toast("No valid IDs found to remove")
 
@@ -89,6 +99,7 @@ with col2:
                     df = pd.concat([df, rows_to_add], ignore_index=False)
                     st.toast(f"Added {len(rows_to_add)} IDs back to the dataset")
                     st.write(f"Found and added {len(rows_to_add)} IDs")
+                    st.session_state.df = df
                 else:
                     st.toast("No new IDs to add")
             else:
@@ -108,6 +119,7 @@ with extract_col1:
                 df = df[df[id_key].isin(ids_to_extract_list)]
                 st.toast(f"Extracted {len(ids_to_extract_list)} IDs")
                 st.write(f"Found and extracted {len(ids_to_extract_list)} IDs")
+                st.session_state.df = df
             else:
                 st.toast("No valid IDs found to extract")
 
@@ -117,7 +129,7 @@ with extract_col2:
             df = original_df.copy()
             st.toast("Restored original file")
             st.write("Original file has been restored")
-
+            st.session_state.df = df
 
 if df is not None:
     # Display the data editor
