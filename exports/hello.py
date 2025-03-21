@@ -84,6 +84,30 @@ with col2:
             else:
                 st.toast("No valid IDs found to add")
 
+st.header("Extract IDs")
+ids_to_extract = st.text_area("IDs to Extract", value="", key="ids_to_extract")
+extract_col1, extract_col2 = st.columns([1, 3])
+with extract_col1:
+    if st.button("Extract IDs", key="extract_ids"):
+        if df is not None:
+            # Extract alphanumeric strings with length > 10
+            ids_to_extract_list = re.findall(r"[a-zA-Z0-9-]{10,}", ids_to_extract)
+
+            if ids_to_extract_list:
+                # Filter to only include rows with matching IDs
+                df = df[df[id_key].isin(ids_to_extract_list)]
+                st.toast(f"Extracted {len(ids_to_extract_list)} IDs")
+                st.write(f"Found and extracted {len(ids_to_extract_list)} IDs")
+            else:
+                st.toast("No valid IDs found to extract")
+
+with extract_col2:
+    if st.button("Restore Original File", key="restore_file"):
+        if original_df is not None:
+            df = original_df.copy()
+            st.toast("Restored original file")
+            st.write("Original file has been restored")
+
 
 if df is not None:
     # Display the data editor
