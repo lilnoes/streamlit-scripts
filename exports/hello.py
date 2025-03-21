@@ -31,13 +31,23 @@ def validate_text(text):
 st.title("Remove IDs from export")
 
 
+df = None
+original_df = None
+
+url_input = st.text_input("Download from URL (optional)")
+if st.button("Download from URL") and url_input:
+    try:
+        df = pd.read_json(url_input, lines=True)
+        original_df = df.copy()
+        st.toast(f"Successfully downloaded data from URL")
+    except Exception as e:
+        st.error(f"Error downloading from URL: {str(e)}")
+
 uploaded_file = st.file_uploader("Choose a JSONL file", type="jsonl")
 id_key = st.text_input("ID key", value="idx")
 category_key = st.text_input("Category key", value="metadata.sub_category")
 to_validate_key = st.text_input("Verification key (Latex)", value="verification")
 
-df = None
-original_df = None
 if uploaded_file is not None:
     df = pd.read_json(uploaded_file, lines=True)
     original_df = df.copy()
