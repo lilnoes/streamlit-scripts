@@ -74,6 +74,7 @@ with col1:
             if ids_to_remove:
                 # Filter out rows with matching IDs
                 df = df[~df[id_key].isin(ids_to_remove)]
+                df = df.reset_index(drop=True)
                 st.toast(f"Removed {len(ids_to_remove)} IDs")
                 st.write(f"Found and removed {len(ids_to_remove)} IDs")
                 st.session_state.df = df
@@ -117,6 +118,7 @@ with extract_col1:
             if ids_to_extract_list:
                 # Filter to only include rows with matching IDs
                 df = df[df[id_key].isin(ids_to_extract_list)]
+                df = df.reset_index(drop=True)
                 st.toast(f"Extracted {len(ids_to_extract_list)} IDs")
                 st.write(f"Found and extracted {len(ids_to_extract_list)} IDs")
                 st.session_state.df = df
@@ -127,6 +129,7 @@ with extract_col2:
     if st.button("Restore Original File", key="restore_file"):
         if original_df is not None:
             df = original_df.copy()
+            df = df.reset_index(drop=True)
             st.toast("Restored original file")
             st.write("Original file has been restored")
             st.session_state.df = df
@@ -134,7 +137,7 @@ with extract_col2:
 if df is not None:
     # Display the data editor
     st.header("All Data")
-    edited_df = st.data_editor(df)
+    st.dataframe(df)
 
     # Display number of unique items per category
     st.header("Category Statistics")
