@@ -2,3 +2,5 @@
 __pycache__
 .streamlit/secrets.toml
 .DS_Store
+secrets.toml
+__pycache__/
