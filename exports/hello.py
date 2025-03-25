@@ -4,6 +4,8 @@ import re
 from sympy import sympify
 from sympy.parsing.latex import parse_latex
 
+from gencsv import gencsv
+
 
 def validate_text(text):
     if not text:
@@ -54,6 +56,8 @@ uploaded_file = st.file_uploader("Choose a JSONL file", type="jsonl")
 id_key = st.text_input("ID key", value="idx")
 category_key = st.text_input("Category key", value="metadata.sub_category")
 to_validate_key = st.text_input("Verification key (Latex)", value="verification")
+
+gencsv()
 
 if uploaded_file is not None:
     df = pd.read_json(uploaded_file, lines=True, dtype=object, convert_dates=False)
