@@ -38,10 +38,9 @@ def gencsv():
 
                 # Display preview of transformed data
                 st.write("Preview of transformed data:")
-                st.write(
-                    transformed_rows[:5]
-                    if len(transformed_rows) > 5
-                    else transformed_rows
+                preview_df = pd.DataFrame(transformed_rows)
+                st.dataframe(
+                    preview_df.head(5) if len(transformed_rows) > 5 else preview_df
                 )
 
             except Exception as e:
