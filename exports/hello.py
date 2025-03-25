@@ -1,33 +1,10 @@
 import streamlit as st
 import pandas as pd
 import re
-from sympy import sympify
-from sympy.parsing.latex import parse_latex
 
 from gencsv import gencsv
-
-
-def validate_text(text):
-    if not text:
-        return False, False, "No text to validate"
-
-    try:
-        # Define inline LaTeX delimiters patterns
-        INLINE_DELIMITERS = [(r"^\$", r"\$$"), (r"^\\\(", r"\\\)$")]
-
-        # Remove inline latex delimiters if present
-        text = text.strip()
-        for start_pattern, end_pattern in INLINE_DELIMITERS:
-            if re.match(start_pattern, text) and re.search(end_pattern, text):
-                text = re.sub(start_pattern, "", text)
-                text = re.sub(end_pattern, "", text)
-                break
-
-        parsed = parse_latex(text, strict=True)
-        value = sympify(parsed)
-        return True, value.is_number, ""
-    except Exception as e:
-        return False, False, str(e)
+from latexall import latexall
+from utils import validate_text
 
 
 st.title("Remove IDs from export")
@@ -53,12 +30,16 @@ if st.button("Download from URL") and url_input:
         st.error(f"Error downloading from URL: {str(e)}")
 
 uploaded_file = st.file_uploader("Choose a JSONL file", type="jsonl")
-id_key = st.text_input("ID key", value="idx")
-category_key = st.text_input("Category key", value="metadata.sub_category")
-to_validate_key = st.text_input("Verification key (Latex)", value="verification")
+id_key = st.text_input("ID key", value="idx", key="id_key")
+category_key = st.text_input(
+    "Category key", value="metadata.sub_category", key="category_key"
+)
+to_validate_key = st.text_input(
+    "Verification key (Latex)", value="verification", key="to_validate_key"
+)
 
 gencsv()
-
+latexall()
 if uploaded_file is not None:
     df = pd.read_json(uploaded_file, lines=True, dtype=object, convert_dates=False)
     original_df = df.copy()

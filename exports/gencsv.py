@@ -7,6 +7,7 @@ import io
 import base64
 
 
+@st.fragment
 def gencsv():
     row_schema = st.text_area("Row Schema", value="")
 
