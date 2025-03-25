@@ -72,11 +72,17 @@ with col1:
             ids_to_remove = re.findall(r"[a-zA-Z0-9-]{10,}", ids_to_remove_text)
 
             if ids_to_remove:
+                prev_size = len(df)
                 # Filter out rows with matching IDs
                 df = df[~df[id_key].isin(ids_to_remove)]
+                new_size = len(df)
                 df = df.reset_index(drop=True)
-                st.toast(f"Removed {len(ids_to_remove)} IDs")
-                st.write(f"Found and removed {len(ids_to_remove)} IDs")
+                if len(ids_to_remove) != prev_size - new_size:
+                    message = f"Pasted {len(ids_to_remove)} IDs, but only {prev_size - new_size} were removed"
+                else:
+                    message = f"Found and removed {len(ids_to_remove)} IDs"
+                st.toast(message)
+                st.write(message)
                 st.session_state.df = df
             else:
                 st.toast("No valid IDs found to remove")
@@ -97,9 +103,16 @@ with col2:
                 rows_to_add = rows_to_add[~rows_to_add[id_key].isin(df[id_key])]
 
                 if not rows_to_add.empty:
+                    prev_size = len(df)
                     df = pd.concat([df, rows_to_add], ignore_index=False)
-                    st.toast(f"Added {len(rows_to_add)} IDs back to the dataset")
-                    st.write(f"Found and added {len(rows_to_add)} IDs")
+                    new_size = len(df)
+                    df = df.reset_index(drop=True)
+                    if len(ids_to_add) != new_size - prev_size:
+                        message = f"Pasted {len(ids_to_add)} IDs, but only {new_size - prev_size} were added"
+                    else:
+                        message = f"Found and added {len(ids_to_add)} IDs"
+                    st.toast(message)
+                    st.write(message)
                     st.session_state.df = df
                 else:
                     st.toast("No new IDs to add")
@@ -116,11 +129,17 @@ with extract_col1:
             ids_to_extract_list = re.findall(r"[a-zA-Z0-9-]{10,}", ids_to_extract)
 
             if ids_to_extract_list:
+                prev_size = len(df)
                 # Filter to only include rows with matching IDs
                 df = df[df[id_key].isin(ids_to_extract_list)]
+                new_size = len(df)
                 df = df.reset_index(drop=True)
-                st.toast(f"Extracted {len(ids_to_extract_list)} IDs")
-                st.write(f"Found and extracted {len(ids_to_extract_list)} IDs")
+                if len(ids_to_extract_list) != new_size:
+                    message = f"Pasted {len(ids_to_extract_list)} IDs, but only {new_size} were extracted"
+                else:
+                    message = f"Found and extracted {len(ids_to_extract_list)} IDs"
+                st.toast(message)
+                st.write(message)
                 st.session_state.df = df
             else:
                 st.toast("No valid IDs found to extract")
@@ -134,7 +153,10 @@ with extract_col2:
             st.write("Original file has been restored")
             st.session_state.df = df
 
-if df is not None:
+if df is not None and category_key is not None and category_key not in df.columns:
+    st.toast(f"No category key found: {category_key}")
+    st.write(f"No category key found: {category_key}")
+elif df is not None:
     # Display the data editor
     st.header("All Data")
     st.dataframe(df)
@@ -218,7 +240,10 @@ if df is not None:
         )
 
 
-if df is not None:
+if df is not None and to_validate_key is not None and to_validate_key not in df.columns:
+    st.toast(f"No validation key found: {to_validate_key}")
+    st.write(f"No validation key found: {to_validate_key}")
+elif df is not None:
 
     # Add validation table
     st.header("Validation Results")
@@ -253,24 +278,29 @@ if df is not None:
     # Create validation dataframe
     validation_df = pd.DataFrame(validation_results)
 
-    # Display validation table
-    st.dataframe(validation_df)
+    if not validation_df.empty:
+        # Display validation table
+        st.dataframe(validation_df)
 
-    # Display validation summary
-    st.subheader("Validation Summary")
-    total_count = len(validation_df)
-    valid_latex_count = validation_df["Is LaTeX"].sum()
-    number_count = validation_df["Is Number"].sum()
+        # Display validation summary
+        st.subheader("Validation Summary")
+        total_count = len(validation_df)
+        valid_latex_count = validation_df["Is LaTeX"].sum()
+        number_count = validation_df["Is Number"].sum()
 
-    summary_data = {
-        "Metric": ["Total Items", "Valid LaTeX", "Numbers"],
-        "Count": [total_count, valid_latex_count, number_count],
-        "Percentage": [
-            "100%",
-            f"{valid_latex_count/total_count*100:.1f}%" if total_count > 0 else "0%",
-            f"{number_count/total_count*100:.1f}%" if total_count > 0 else "0%",
-        ],
-    }
+        summary_data = {
+            "Metric": ["Total Items", "Valid LaTeX", "Numbers"],
+            "Count": [total_count, valid_latex_count, number_count],
+            "Percentage": [
+                "100%",
+                (
+                    f"{valid_latex_count/total_count*100:.1f}%"
+                    if total_count > 0
+                    else "0%"
+                ),
+                f"{number_count/total_count*100:.1f}%" if total_count > 0 else "0%",
+            ],
+        }
 
-    summary_df = pd.DataFrame(summary_data)
-    st.table(summary_df)
+        summary_df = pd.DataFrame(summary_data)
+        st.table(summary_df)
