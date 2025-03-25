@@ -1,9 +1,44 @@
 import re
 from sympy import sympify
-from sympy.parsing.latex import parse_latex
+from sympy.parsing.latex import parse_latex, parse_latex_lark
+from pylatexenc.latex2text import LatexNodes2Text
+from interfaces import ParseType
 
 
-def validate_text(text):
+def validate_text_pylatexenc(text):
+    if not text:
+        return False, False, "No text to validate"
+
+    try:
+        LatexNodes2Text().latex_to_text(text)
+        return True, False, ""
+    except Exception as e:
+        return False, False, str(e)
+
+
+def validate_text_lark(text):
+    if not text:
+        return False, False, "No text to validate"
+
+    try:
+        # Define inline LaTeX delimiters patterns
+        INLINE_DELIMITERS = [(r"^\$", r"\$$"), (r"^\\\(", r"\\\)$")]
+
+        # Remove inline latex delimiters if present
+        text = text.strip()
+        for start_pattern, end_pattern in INLINE_DELIMITERS:
+            if re.match(start_pattern, text) and re.search(end_pattern, text):
+                text = re.sub(start_pattern, "", text)
+                text = re.sub(end_pattern, "", text)
+                break
+
+        parse_latex_lark(text)
+        return True, False, ""
+    except Exception as e:
+        return False, False, str(e)
+
+
+def validate_text_antlr(text):
     if not text:
         return False, False, "No text to validate"
 
@@ -24,6 +59,18 @@ def validate_text(text):
         return True, value.is_number, ""
     except Exception as e:
         return False, False, str(e)
+
+
+def validate_text(text, parse_type: ParseType = ParseType.SYMPY_ANTLR):
+    if parse_type == ParseType.PYLATEXENC:
+        return validate_text_pylatexenc(text)
+    elif parse_type == ParseType.SYMPY_LARK:
+        return validate_text_lark(text)
+    elif parse_type == ParseType.SYMPY_ANTLR:
+        return validate_text_antlr(text)
+
+    else:
+        raise ValueError(f"Invalid parse type: {parse_type}")
 
 
 def extract_math_expressions(text: str, inline_only: bool = False) -> list[str]:

@@ -3,10 +3,13 @@ import streamlit as st
 import json
 
 from utils import validate_text, extract_math_expressions, extract_all_text
+from interfaces import ParseType
 
 
 @st.fragment
-def latex_expression_editor(expression, error_msg, key_prefix):
+def latex_expression_editor(
+    expression, error_msg, key_prefix, parse_type: ParseType = ParseType.SYMPY_ANTLR
+):
     """Fragment to edit and validate a single LaTeX expression."""
     # Display the original expression
     st.code(expression, language="latex")
@@ -27,7 +30,7 @@ def latex_expression_editor(expression, error_msg, key_prefix):
 
     # Add validation button
     if st.button("Validate edited expression", key=f"validate_{key_prefix}"):
-        is_valid, _, new_error_msg = validate_text(edited_expr)
+        is_valid, _, new_error_msg = validate_text(edited_expr, parse_type)
         if is_valid:
             st.success("LaTeX expression is now valid!")
         else:
@@ -36,10 +39,12 @@ def latex_expression_editor(expression, error_msg, key_prefix):
 
 @st.fragment
 def latexall():
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         is_all = st.checkbox("Validate All keys", value=False)
     with col2:
+        parse_type = st.selectbox("Parse Type", options=ParseType, index=0)
+    with col3:
         if not st.button("Validate Latex"):
             return
     if "df" not in st.session_state:
@@ -71,7 +76,7 @@ def latexall():
         # Validate each expression
         faulty_expressions = []
         for expr in expressions:
-            is_valid, _, error_msg = validate_text(expr)
+            is_valid, _, error_msg = validate_text(expr, parse_type)
             if not is_valid:
                 faulty_expressions.append({"expression": expr, "error": error_msg})
 
@@ -97,6 +102,8 @@ def latexall():
                     expr_key = f"expr_{result['id']}_{i}"
 
                     # Use a fragment for each expression editor
-                    latex_expression_editor(expr["expression"], expr["error"], expr_key)
+                    latex_expression_editor(
+                        expr["expression"], expr["error"], expr_key, parse_type
+                    )
     else:
         st.success("No LaTeX errors found!")
