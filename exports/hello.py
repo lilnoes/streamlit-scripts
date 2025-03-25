@@ -153,14 +153,15 @@ with extract_col2:
             st.write("Original file has been restored")
             st.session_state.df = df
 
-if df is not None and category_key is not None and category_key not in df.columns:
-    st.toast(f"No category key found: {category_key}")
-    st.write(f"No category key found: {category_key}")
-elif df is not None:
+if df is not None:
     # Display the data editor
     st.header("All Data")
     st.dataframe(df)
 
+if df is not None and category_key is not None and category_key not in df.columns:
+    st.toast(f"No category key found: {category_key}")
+    st.write(f"No category key found: {category_key}")
+elif df is not None:
     # Display number of unique items per category
     st.header("Category Statistics")
     # Extract the category from nested JSON if needed
