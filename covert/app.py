@@ -28,11 +28,12 @@ pages = {
 
 st.sidebar.title("Covert Exports")
 with st.sidebar:
-    for key, values in pages.items():
+    for index, (key, values) in enumerate(pages.items()):
         expander = st.sidebar.expander(key)
         for page in values:
             expander.page_link(page)
-        st.sidebar.divider()
+        if index < len(pages) - 1:
+            st.sidebar.divider()
 
 pg = st.navigation(pages)
 pg.run()
