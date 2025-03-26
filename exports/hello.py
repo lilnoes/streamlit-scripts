@@ -65,10 +65,20 @@ with col1:
                 if len(ids_to_remove) != prev_size - new_size:
                     message = f"Pasted {len(ids_to_remove)} IDs, but only {prev_size - new_size} were removed"
                 else:
-                    message = f"Found and removed {len(ids_to_remove)} IDs"
+                    message = f"Found and removed {(prev_size - new_size)} IDs"
                 st.toast(message)
                 st.write(message)
                 st.session_state.df = df
+
+                # Add download button for the filtered data
+                jsonl_data = df.to_json(orient="records", lines=True)
+                st.download_button(
+                    label="Download filtered data",
+                    data=jsonl_data,
+                    file_name="filtered_data_after_remove.jsonl",
+                    mime="application/jsonl",
+                    key="download_after_remove",
+                )
             else:
                 st.toast("No valid IDs found to remove")
 
@@ -82,6 +92,7 @@ with col2:
             ids_to_add = re.findall(r"[a-zA-Z0-9]{10,}", ids_to_add_text)
 
             if ids_to_add:
+                df = st.session_state.df
                 # Find rows in original_df that match the IDs and aren't already in df
                 rows_to_add = original_df[original_df[id_key].isin(ids_to_add)]
                 # Only add rows that aren't already in the current df
@@ -99,6 +110,16 @@ with col2:
                     st.toast(message)
                     st.write(message)
                     st.session_state.df = df
+
+                    # Add download button for the updated data
+                    jsonl_data = df.to_json(orient="records", lines=True)
+                    st.download_button(
+                        label="Download updated data",
+                        data=jsonl_data,
+                        file_name="updated_data_after_add.jsonl",
+                        mime="application/jsonl",
+                        key="download_after_add",
+                    )
                 else:
                     st.toast("No new IDs to add")
             else:
@@ -126,6 +147,16 @@ with extract_col1:
                 st.toast(message)
                 st.write(message)
                 st.session_state.df = df
+
+                jsonl_data = df.to_json(orient="records", lines=True)
+                st.download_button(
+                    label="Download extracted data",
+                    data=jsonl_data,
+                    file_name="extracted_data.jsonl",
+                    mime="application/jsonl",
+                    key="download_extracted",
+                )
+
             else:
                 st.toast("No valid IDs found to extract")
 
