@@ -1,27 +1,21 @@
 import streamlit as st
-from covert.scripts.backfill.page import main as backfill_main
-from covert.scripts.combine.page import main as combine_main
+import pandas as pd
+from covert.scripts.files.remove_ids import main as remove_ids_main
 
 # from scripts.default.default import main as default_main
+
+if "df" not in st.session_state:
+    st.session_state.df = pd.DataFrame()
+if "original_df" not in st.session_state:
+    st.session_state.original_df = pd.DataFrame()
 
 pages = {
     "Files Processing": [
         st.Page(
-            backfill_main,
-            title="Backfill",
+            remove_ids_main,
+            title="Remove IDs",
             icon=":material/arrow_back_ios:",
-            url_path="/backfill",
-        ),
-        st.Page(
-            combine_main,
-            title="Combine",
-            icon=":material/arrow_back_ios:",
-            url_path="/combine",
-        ),
-        st.Page(
-            "scripts/default/default.py",
-            title="Default",
-            icon=":material/arrow_back_ios:",
+            url_path="/files-remove_ids",
         ),
     ]
 }
