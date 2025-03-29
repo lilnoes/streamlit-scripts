@@ -5,6 +5,14 @@ from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
 from covert.common.download_url import download_from_url
 from ydata_profiling import ProfileReport
+import streamlit.components.v1 as components
+
+
+@st.fragment
+def get_summary(df):
+    pr = ProfileReport(df, title="Pandas Profiler Report")
+    t = pr.to_html()
+    components.html(t, height=1000, scrolling=True)
 
 
 def main():
@@ -23,6 +31,4 @@ def main():
     data_preview(df)
 
     if st.button("Get summary"):
-        pr = ProfileReport(df, title="Pandas Profiler Report")
-        t = pr.to_html()
-        st.html(t)
+        get_summary(df)
