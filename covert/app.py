@@ -11,6 +11,8 @@ from covert.scripts.files_processing.split_tasks_by_key import (
 )
 from covert.scripts.files_converters.jsonl_to_csv import main as jsonl_to_csv_main
 from covert.scripts.validators.latex import main as latex_main
+from covert.scripts.validators.profiler import main as profiler_main
+
 
 if "df" not in st.session_state:
     st.session_state.df = pd.DataFrame()
@@ -52,7 +54,13 @@ pages = {
             title="LaTeX Validator",
             icon=":material/arrow_back_ios:",
             url_path="/validators-latex",
-        )
+        ),
+        st.Page(
+            profiler_main,
+            title="Pandas Profiler",
+            icon=":material/arrow_back_ios:",
+            url_path="/validators-profiler",
+        ),
     ],
 }
 
