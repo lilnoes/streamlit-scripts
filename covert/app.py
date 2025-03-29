@@ -1,9 +1,16 @@
 import streamlit as st
 import pandas as pd
-from covert.scripts.files.remove_tasks_by_key import main as remove_tasks_by_key_main
-from covert.scripts.files.extract_tasks_by_key import main as extract_tasks_by_key_main
-
-# from scripts.default.default import main as default_main
+from covert.scripts.files_processing.remove_tasks_by_key import (
+    main as remove_tasks_by_key_main,
+)
+from covert.scripts.files_processing.extract_tasks_by_key import (
+    main as extract_tasks_by_key_main,
+)
+from covert.scripts.files_processing.split_tasks_by_key import (
+    main as split_tasks_by_key_main,
+)
+from covert.scripts.files_converters.jsonl_to_csv import main as jsonl_to_csv_main
+from covert.scripts.validators.latex import main as latex_main
 
 if "df" not in st.session_state:
     st.session_state.df = pd.DataFrame()
@@ -16,15 +23,37 @@ pages = {
             remove_tasks_by_key_main,
             title="Remove Tasks By Key",
             icon=":material/arrow_back_ios:",
-            url_path="/files-remove_tasks_by_key",
+            url_path="/files-processing-remove_tasks_by_key",
         ),
         st.Page(
             extract_tasks_by_key_main,
             title="Extract Tasks By Key",
             icon=":material/arrow_back_ios:",
-            url_path="/files-extract_tasks_by_key",
+            url_path="/files-processing-extract_tasks_by_key",
         ),
-    ]
+        st.Page(
+            split_tasks_by_key_main,
+            title="Split Tasks By Key",
+            icon=":material/arrow_back_ios:",
+            url_path="/files-processing-split_tasks_by_key",
+        ),
+    ],
+    "Files Converters": [
+        st.Page(
+            jsonl_to_csv_main,
+            title="JSONL to CSV",
+            icon=":material/arrow_back_ios:",
+            url_path="/files-converters-jsonl_to_csv",
+        )
+    ],
+    "Validators": [
+        st.Page(
+            latex_main,
+            title="LaTeX Validator",
+            icon=":material/arrow_back_ios:",
+            url_path="/validators-latex",
+        )
+    ],
 }
 
 st.sidebar.title("Covert Exports")

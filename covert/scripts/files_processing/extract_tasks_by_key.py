@@ -1,14 +1,15 @@
 import streamlit as st
 import pandas as pd
 
+from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
 from covert.common.download_url import download_from_url
 from covert.utils.dataframes import get_keys
 
 
-def remove_tasks_callback(ids_to_remove, id_key):
-    if not ids_to_remove:
-        st.warning("Please enter at least one ID to remove.")
+def extract_tasks_callback(ids_to_extract, id_key):
+    if not ids_to_extract:
+        st.warning("Please enter at least one ID to extract.")
         return
 
     df = st.session_state.df
@@ -16,26 +17,26 @@ def remove_tasks_callback(ids_to_remove, id_key):
     if "." in id_key:
         # Handle nested keys (e.g., "metadata.id")
         parent_key, child_key = id_key.split(".", 1)
-        # Filter out rows where the nested key matches any ID in the list
+        # Filter rows where the nested key matches any ID in the list
         filtered_df = df[
-            ~df[parent_key].apply(
+            df[parent_key].apply(
                 lambda x: (
-                    x.get(child_key) in ids_to_remove if isinstance(x, dict) else False
+                    x.get(child_key) in ids_to_extract if isinstance(x, dict) else False
                 )
             )
         ]
     else:
-        # Filter out rows where the key matches any ID in the list
-        filtered_df = df[~df[id_key].isin(ids_to_remove)]
+        # Filter rows where the key matches any ID in the list
+        filtered_df = df[df[id_key].isin(ids_to_extract)]
 
-    # Count removed items
-    removed_count = len(df) - len(filtered_df)
+    # Count extracted items
+    extracted_count = len(filtered_df)
 
     # Update session state
     st.session_state.df = filtered_df
 
     st.toast(
-        f"Entered {len(ids_to_remove)} IDs to remove. Removed {removed_count} tasks."
+        f"Entered {len(ids_to_extract)} IDs to extract. Extracted {extracted_count} tasks."
     )
 
 
@@ -44,7 +45,7 @@ def restore_original_file_callback():
 
 
 def main():
-    st.title("Remove Tasks By Key")
+    st.title("Extract Tasks By Key")
 
     # generate a helper text here
     st.markdown("")
@@ -57,37 +58,29 @@ def main():
     df = st.session_state.df
     original_df = st.session_state.original_df
 
-    if not df.empty:
-        st.write(df.head(5))
-
-    st.divider()
-
-    if st.button("View All"):
-        st.header("All Data")
-        st.write(df)
-        st.divider()
+    data_preview(df)
 
     keys = get_keys(df)
 
     id_key = st.selectbox("Select Key", keys)
 
-    ids_to_remove_text = st.text_area("IDs to Remove")
+    ids_to_extract_text = st.text_area("IDs to Extract")
 
-    ids_to_remove = ids_to_remove_text.split("\n")
-    ids_to_remove = [id.strip() for id in ids_to_remove if id.strip()]
+    ids_to_extract = ids_to_extract_text.split("\n")
+    ids_to_extract = [id.strip() for id in ids_to_extract if id.strip()]
 
     col1, col2 = st.columns(2)
     with col1:
         st.button(
-            "Remove Tasks",
-            on_click=remove_tasks_callback,
-            args=(ids_to_remove, id_key),
+            "Extract Tasks",
+            on_click=extract_tasks_callback,
+            args=(ids_to_extract, id_key),
         )
 
     with col2:
         st.button("Restore Original file", on_click=restore_original_file_callback)
 
-    if not df.empty and st.button("Download Filtered Data"):
+    if not df.empty and st.button("Download Extracted Data"):
         # Convert DataFrame to JSONL
         jsonl_data = df.to_json(orient="records", lines=True)
 
@@ -95,6 +88,6 @@ def main():
         st.download_button(
             label="Download JSONL",
             data=jsonl_data,
-            file_name="filtered_tasks.jsonl",
+            file_name="extracted_tasks.jsonl",
             mime="application/jsonl",
         )

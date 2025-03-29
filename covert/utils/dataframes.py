@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 
 
-@st.cache_data
 def get_keys(df: pd.DataFrame) -> list[str]:
     """
     Get all column names from a DataFrame, and for columns containing dictionaries,
