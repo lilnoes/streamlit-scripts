@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-from covert.scripts.files.remove_ids import main as remove_ids_main
+from covert.scripts.files.remove_tasks_by_key import main as remove_tasks_by_key_main
+from covert.scripts.files.extract_tasks_by_key import main as extract_tasks_by_key_main
 
 # from scripts.default.default import main as default_main
 
@@ -12,10 +13,16 @@ if "original_df" not in st.session_state:
 pages = {
     "Files Processing": [
         st.Page(
-            remove_ids_main,
-            title="Remove IDs",
+            remove_tasks_by_key_main,
+            title="Remove Tasks By Key",
             icon=":material/arrow_back_ios:",
-            url_path="/files-remove_ids",
+            url_path="/files-remove_tasks_by_key",
+        ),
+        st.Page(
+            extract_tasks_by_key_main,
+            title="Extract Tasks By Key",
+            icon=":material/arrow_back_ios:",
+            url_path="/files-extract_tasks_by_key",
         ),
     ]
 }
