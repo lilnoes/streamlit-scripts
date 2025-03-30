@@ -1,9 +1,19 @@
 import streamlit as st
 
 
-def data_preview(df, page_size=50, prefix_key=""):
-    if df.empty:
-        return
+def data_previewer(
+    total_size, get_page_data, page_size=50, prefix_key="", render_fn=st.dataframe
+):
+    """
+    Generic data preview component with pagination
+
+    Args:
+        total_size: Total number of items
+        get_page_data: Function that takes (start_idx, end_idx) and returns data for that page
+        page_size: Number of items per page
+        prefix_key: Prefix for session state keys
+        render_fn: Function to render the data (defaults to st.dataframe)
+    """
     page_key = f"{prefix_key}_page"
     if page_key not in st.session_state:
         st.session_state[page_key] = 0
@@ -12,17 +22,16 @@ def data_preview(df, page_size=50, prefix_key=""):
         page = st.session_state[page_key]
 
     # Calculate total pages and row information
-    total_rows = len(df)
-    total_pages = (total_rows - 1) // page_size
+    total_pages = (total_size - 1) // page_size
     start_idx = page * page_size
-    end_idx = min(start_idx + page_size, total_rows)
+    end_idx = min(start_idx + page_size, total_size)
 
     with st.expander("Data Preview"):
+        # Get and display the data for current page
+        current_page_data = get_page_data(start_idx, end_idx)
+        render_fn(current_page_data)
 
-        # Display the dataframe slice for current page
-        st.dataframe(df.iloc[start_idx:end_idx])
-
-        # Display pagination controls below the dataframe
+        # Display pagination controls below the data
         col1, col2, col3 = st.columns([1, 2, 1])
 
         with col1:
@@ -35,7 +44,7 @@ def data_preview(df, page_size=50, prefix_key=""):
 
         with col2:
             st.write(
-                f"Page {page + 1} of {total_pages + 1} (Rows {start_idx + 1}-{end_idx} of {total_rows})"
+                f"Page {page + 1} of {total_pages + 1} (Items {start_idx + 1}-{end_idx} of {total_size})"
             )
 
         with col3:
@@ -45,3 +54,15 @@ def data_preview(df, page_size=50, prefix_key=""):
                 on_click=lambda: setattr(st.session_state, page_key, page + 1),
                 key=f"{prefix_key}_next",
             )
+
+
+def data_preview(df, page_size=50, prefix_key=""):
+    """Legacy function that uses data_previewer for DataFrame pagination"""
+    if df.empty:
+        return
+    return data_previewer(
+        total_size=len(df),
+        get_page_data=lambda start, end: df.iloc[start:end],
+        page_size=page_size,
+        prefix_key=prefix_key,
+    )

@@ -7,6 +7,7 @@ import csv
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
 from covert.common.download_url import download_from_url
+from covert.utils.transform import transform_data
 
 
 @st.fragment
@@ -20,15 +21,7 @@ def to_csv(df, row_schema):
     if not row_schema:
         return None
     try:
-        # Create JSONata expression from schema
-        expression = jsonata.Jsonata(row_schema)
-
-        # Transform each row in the dataframe
-        transformed_rows = []
-        for _, row in df.iterrows():
-            row_dict = row.to_dict()
-            transformed_row = expression.evaluate(row_dict)
-            transformed_rows.append(transformed_row)
+        transformed_rows = transform_data(df, row_schema)
 
         # Get all unique keys from transformed data
         all_keys = set()
@@ -48,18 +41,7 @@ def to_csv(df, row_schema):
         return None
 
 
-def main():
-    st.title("JSONL to CSV")
-
-    # generate a helper text here
-    st.markdown("")
-
-    upload_file("Choose a file (JSONL)")
-    download_from_url("Download from URL (optional)", "Download from URL")
-
-    st.divider()
-
-    df = st.session_state.df
+def main(df):
 
     data_preview(df)
 

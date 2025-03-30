@@ -1,5 +1,8 @@
 import pandas as pd
 import streamlit as st
+from io import StringIO, BytesIO
+
+from covert.scripts.types.file_types import FileType
 
 
 def get_keys(df: pd.DataFrame) -> list[str]:
@@ -32,3 +35,33 @@ def get_keys(df: pd.DataFrame) -> list[str]:
                 keys.extend(dict_keys)
 
     return keys
+
+
+def bytes_to_dataframe(data: bytes) -> tuple[pd.DataFrame, FileType]:
+    text = data.decode("utf-8", errors="replace").strip()
+
+    # Try JSON
+    try:
+        df = pd.read_json(StringIO(text))
+        if not df.empty:
+            return df, FileType.JSON
+    except Exception:
+        pass
+
+    # Try JSON Lines
+    try:
+        df = pd.read_json(StringIO(text), lines=True)
+        if not df.empty:
+            return df, FileType.JSONL
+    except Exception:
+        pass
+
+    # Try CSV
+    try:
+        df = pd.read_csv(StringIO(text))
+        if not df.empty:
+            return df, FileType.CSV
+    except Exception:
+        pass
+
+    return None, None

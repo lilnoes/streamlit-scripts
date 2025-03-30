@@ -9,10 +9,9 @@ from covert.scripts.files_processing.extract_tasks_by_key import (
 from covert.scripts.files_processing.split_tasks_by_key import (
     main as split_tasks_by_key_main,
 )
-from covert.scripts.files_converters.jsonl_to_csv import main as jsonl_to_csv_main
+from covert.scripts.files_processing.converter import main as converter_main
 from covert.scripts.validators.latex import main as latex_main
 from covert.scripts.validators.profiler import main as profiler_main
-
 
 if "df" not in st.session_state:
     st.session_state.df = pd.DataFrame()
@@ -39,14 +38,12 @@ pages = {
             icon=":material/arrow_back_ios:",
             url_path="/files-processing-split_tasks_by_key",
         ),
-    ],
-    "Files Converters": [
         st.Page(
-            jsonl_to_csv_main,
-            title="JSONL to CSV",
+            converter_main,
+            title="File Converter",
             icon=":material/arrow_back_ios:",
-            url_path="/files-converters-jsonl_to_csv",
-        )
+            url_path="/files-processing-converter",
+        ),
     ],
     "Validators": [
         st.Page(
