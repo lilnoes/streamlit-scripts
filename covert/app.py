@@ -10,6 +10,10 @@ from covert.scripts.files_processing.split_tasks_by_key import (
     main as split_tasks_by_key_main,
 )
 from covert.scripts.files_processing.converter import main as converter_main
+from covert.scripts.files_processing.extract_keys import main as extract_keys_main
+from covert.scripts.files_processing.duplicates_remover import (
+    main as duplicates_remover_main,
+)
 from covert.scripts.validators.latex import main as latex_main
 from covert.scripts.validators.profiler import main as profiler_main
 
@@ -43,6 +47,18 @@ pages = {
             title="File Converter",
             icon=":material/arrow_back_ios:",
             url_path="/files-processing-converter",
+        ),
+        st.Page(
+            extract_keys_main,
+            title="Extract Keys",
+            icon=":material/arrow_back_ios:",
+            url_path="/files-processing-extract_keys",
+        ),
+        st.Page(
+            duplicates_remover_main,
+            title="Duplicates Remover",
+            icon=":material/arrow_back_ios:",
+            url_path="/files-processing-duplicates_remover",
         ),
     ],
     "Validators": [

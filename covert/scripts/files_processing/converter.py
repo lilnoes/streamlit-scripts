@@ -7,7 +7,7 @@ from covert.scripts.files_processing.converters.to_jsonl import main as to_jsonl
 from covert.scripts.files_processing.converters.to_json import main as to_json
 from covert.scripts.files_processing.converters.to_csv import main as to_csv
 from covert.scripts.files_processing.converters.json_reader import main as json_reader
-from covert.utils.files import read_bytes, get_file_type
+from covert.utils.files import read, get_file_type
 
 
 def save_file_to_session(file_name: str, file_bytes: bytes):
@@ -20,7 +20,7 @@ def save_file_to_session(file_name: str, file_bytes: bytes):
         st.error(f"Unknown file type: {file_name}")
         return
 
-    chosen_file = read_bytes(file_bytes, chosen_file_type)
+    chosen_file = read(file_bytes, chosen_file_type)
     st.session_state["chosen_file"] = chosen_file
     st.session_state["chosen_file_bytes"] = file_bytes
 

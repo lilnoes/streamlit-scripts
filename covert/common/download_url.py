@@ -14,9 +14,15 @@ def download_callback(url_input: str, session_state_key: str):
 
 
 def download_from_url(
-    url_input_text: str, download_text: str, session_state_key: str = "df"
+    url_input_text: str,
+    download_text: str,
+    session_state_key: str = "df",
+    key="downloa_file",
 ):
     url_input = st.text_input(url_input_text)
     st.button(
-        download_text, on_click=download_callback, args=(url_input, session_state_key)
+        download_text,
+        on_click=download_callback,
+        args=(url_input, session_state_key),
+        key=key,
     )
