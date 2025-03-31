@@ -41,7 +41,9 @@ def to_csv(df, row_schema):
         return None
 
 
-def main(df):
+def main():
+
+    df = st.session_state["chosen_file"]
 
     data_preview(df)
 

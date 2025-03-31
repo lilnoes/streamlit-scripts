@@ -4,3 +4,6 @@ __pycache__
 .DS_Store
 secrets.toml
 __pycache__/
+*.json
+*.jsonl
+*.csv

@@ -3,9 +3,10 @@ from sympy import sympify
 from sympy.parsing.latex import parse_latex, parse_latex_lark
 from pylatexenc.latex2text import LatexNodes2Text
 from covert.scripts.types.parse_type import ParseType
+from typing import Any
 
 
-def validate_text_pylatexenc(text):
+def validate_text_pylatexenc(text: str) -> tuple[bool, bool, str]:
     if not text:
         return False, False, "No text to validate"
 
@@ -16,7 +17,7 @@ def validate_text_pylatexenc(text):
         return False, False, str(e)
 
 
-def validate_text_lark(text):
+def validate_text_lark(text: str) -> tuple[bool, bool, str]:
     if not text:
         return False, False, "No text to validate"
 
@@ -38,7 +39,7 @@ def validate_text_lark(text):
         return False, False, str(e)
 
 
-def validate_text_antlr(text):
+def validate_text_antlr(text: str) -> tuple[bool, bool, str]:
     if not text:
         return False, False, "No text to validate"
 
@@ -61,7 +62,9 @@ def validate_text_antlr(text):
         return False, False, str(e)
 
 
-def validate_text(text, parse_type: ParseType = ParseType.SYMPY_ANTLR):
+def validate_text(
+    text: str, parse_type: ParseType = ParseType.SYMPY_ANTLR
+) -> tuple[bool, bool, str]:
     if parse_type == ParseType.PYLATEXENC:
         return validate_text_pylatexenc(text)
     elif parse_type == ParseType.SYMPY_LARK:
@@ -106,7 +109,7 @@ def extract_math_expressions(text: str, inline_only: bool = False) -> list[str]:
     return cleaned_expressions
 
 
-def extract_all_text(data) -> str:
+def extract_all_text(data: Any) -> str:
     """
     Recursively extract text from any data structure and join with spaces.
 

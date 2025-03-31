@@ -4,30 +4,18 @@ import pandas as pd
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
 from covert.common.download_url import download_from_url
-from covert.utils.dataframes import get_keys
+from covert.utils.dataframes import get_keys, get_nested_value
 
 
-def split_tasks(df, split_key):
-    # Handle nested JSON keys
-    if "." in split_key:
-        parts = split_key.split(".")
-        # Group data by the nested key value
-        grouped_data = {}
-        for _, row in df.iterrows():
-            category = (
-                row[parts[0]].get(parts[1]) if isinstance(row[parts[0]], dict) else None
-            )
-            if category not in grouped_data:
-                grouped_data[category] = []
-            grouped_data[category] = grouped_data[category] + [row.to_dict()]
-    else:
-        # Group data by the direct key value
-        grouped_data = {}
-        for idx, row in df.iterrows():
-            category = row.get(split_key)
-            if category not in grouped_data:
-                grouped_data[category] = []
-            grouped_data[category] = grouped_data[category] + [row.to_dict()]
+def split_tasks(df: pd.DataFrame, split_key: str) -> tuple[dict, dict]:
+    # Group data by the key value (nested or direct)
+    grouped_data = {}
+    for _, row in df.iterrows():
+        row_dict = row.to_dict()
+        category = get_nested_value(row_dict, split_key)
+        if category not in grouped_data:
+            grouped_data[category] = []
+        grouped_data[category] = grouped_data[category] + [row_dict]
 
     # Convert each group to JSONL format and count items
     jsonl_data = {}

@@ -4,7 +4,7 @@ import pandas as pd
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
 from covert.common.download_url import download_from_url
-from covert.utils.dataframes import get_keys
+from covert.utils.dataframes import get_keys, get_nested_value
 
 
 def extract_tasks_callback(ids_to_extract, id_key):
@@ -14,20 +14,13 @@ def extract_tasks_callback(ids_to_extract, id_key):
 
     df = st.session_state.df
 
-    if "." in id_key:
-        # Handle nested keys (e.g., "metadata.id")
-        parent_key, child_key = id_key.split(".", 1)
-        # Filter rows where the nested key matches any ID in the list
-        filtered_df = df[
-            df[parent_key].apply(
-                lambda x: (
-                    x.get(child_key) in ids_to_extract if isinstance(x, dict) else False
-                )
-            )
-        ]
-    else:
-        # Filter rows where the key matches any ID in the list
-        filtered_df = df[df[id_key].isin(ids_to_extract)]
+    # Filter rows where the key (nested or direct) matches any ID in the list
+    filtered_df = df[
+        df.apply(
+            lambda row: get_nested_value(row.to_dict(), id_key) in ids_to_extract,
+            axis=1,
+        )
+    ]
 
     # Count extracted items
     extracted_count = len(filtered_df)

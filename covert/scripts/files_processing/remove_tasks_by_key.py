@@ -4,30 +4,22 @@ import pandas as pd
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
 from covert.common.download_url import download_from_url
-from covert.utils.dataframes import get_keys
+from covert.utils.dataframes import get_keys, get_nested_value
 
 
-def remove_tasks_callback(ids_to_remove, id_key):
+def remove_tasks_callback(ids_to_remove: list[str], id_key: str) -> None:
     if not ids_to_remove:
         st.warning("Please enter at least one ID to remove.")
         return
 
     df = st.session_state.df
 
-    if "." in id_key:
-        # Handle nested keys (e.g., "metadata.id")
-        parent_key, child_key = id_key.split(".", 1)
-        # Filter out rows where the nested key matches any ID in the list
-        filtered_df = df[
-            ~df[parent_key].apply(
-                lambda x: (
-                    x.get(child_key) in ids_to_remove if isinstance(x, dict) else False
-                )
-            )
-        ]
-    else:
-        # Filter out rows where the key matches any ID in the list
-        filtered_df = df[~df[id_key].isin(ids_to_remove)]
+    # Filter out rows where the key (nested or direct) matches any ID in the list
+    filtered_df = df[
+        ~df.apply(
+            lambda row: get_nested_value(row.to_dict(), id_key) in ids_to_remove, axis=1
+        )
+    ]
 
     # Count removed items
     removed_count = len(df) - len(filtered_df)
