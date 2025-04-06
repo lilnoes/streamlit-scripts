@@ -35,7 +35,6 @@ def read_json_callback(orient_method: OrientMethod):
 def main():
     chosen_file_type = st.session_state["chosen_file_type"]
     chosen_file = st.session_state["chosen_file"]
-    print(chosen_file_type)
 
     if not chosen_file.empty and chosen_file_type == FileType.JSON:
         orient_method = st.selectbox(

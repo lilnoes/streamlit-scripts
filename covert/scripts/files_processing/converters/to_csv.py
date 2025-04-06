@@ -1,12 +1,9 @@
 import streamlit as st
 import pandas as pd
-import jsonata
 import io
 import csv
 
 from covert.common.data_preview import data_preview
-from covert.common.upload_file import upload_file
-from covert.common.download_url import download_from_url
 from covert.utils.transform import transform_data
 
 
@@ -18,9 +15,13 @@ def preview_data(csv_data):
 
 
 def to_csv(df, row_schema):
-    if not row_schema:
-        return None
     try:
+        if not row_schema:
+            # Direct conversion to CSV without transformation
+            output = io.StringIO()
+            df.to_csv(output, index=False)
+            return output.getvalue()
+
         transformed_rows = transform_data(df, row_schema)
 
         # Get all unique keys from transformed data
@@ -42,12 +43,16 @@ def to_csv(df, row_schema):
 
 
 def main():
-
     df = st.session_state["chosen_file"]
 
-    data_preview(df)
-
-    row_schema = st.text_area("Row Schema")
+    row_schema = st.text_area(
+        "Row Schema",
+        help="""
+        The row schema is a JSONata expression that describes the structure of the data in the file.
+        It is used to transform the data into a CSV format.
+        (If empty, the data will be converted to a CSV without transformation)
+        """,
+    )
 
     if st.button("Convert to CSV"):
         csv_data = to_csv(df, row_schema)

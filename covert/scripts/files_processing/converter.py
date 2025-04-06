@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import pandas as pd
 
+from covert.common.data_preview import data_preview
 from covert.scripts.types.file_types import FileType
 from covert.scripts.files_processing.converters.to_jsonl import main as to_jsonl
 from covert.scripts.files_processing.converters.to_json import main as to_json
@@ -58,8 +59,10 @@ def main():
 
     json_reader()
 
+    data_preview(chosen_file)
+
     convert_to = st.selectbox(
-        "Convert to", [FileType.CSV, FileType.JSON, FileType.JSONL]
+        "Convert to", [FileType.CSV.value, FileType.JSON.value, FileType.JSONL.value]
     )
 
     if convert_to == FileType.CSV:

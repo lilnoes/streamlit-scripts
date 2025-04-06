@@ -1,42 +1,62 @@
 import streamlit as st
 import pandas as pd
-import jsonata
 import io
-import csv
+import json
 
 from covert.common.data_preview import data_preview
-from covert.common.upload_file import upload_file
-from covert.common.download_url import download_from_url
+from covert.utils.transform import transform_data
 
 
 @st.fragment
-def preview_data(csv_data):
+def preview_data(json_data):
     st.header("Preview of transformed data:")
-    preview_df = pd.read_csv(io.StringIO(csv_data))
-    data_preview(preview_df, prefix_key="jsonl_to_csv")
+    try:
+        preview_df = pd.read_json(io.StringIO(json_data))
+        data_preview(preview_df, prefix_key="to_json")
+    except Exception as e:
+        st.error(f"Error previewing JSON data: {str(e)}")
+        st.text(json_data[:1000] + "..." if len(json_data) > 1000 else json_data)
 
 
-def to_csv(df, row_schema):
-    pass
+def to_json(df: pd.DataFrame, row_schema: str):
+    try:
+        if not row_schema:
+            output = io.StringIO()
+            df.to_json(output, orient="records")
+            return output.getvalue()
+
+        transformed_rows = transform_data(df, row_schema)
+
+        if len(transformed_rows) != 1:
+            return {"items": transformed_rows}
+        return transformed_rows[0]
+
+    except Exception as e:
+        st.error(f"Error transforming data: {str(e)}")
+        return None
 
 
 def main():
-
     df = st.session_state["chosen_file"]
 
-    data_preview(df)
-
-    row_schema = st.text_area("Row Schema")
+    row_schema = st.text_area(
+        "Row Schema",
+        help="""
+        The row schema is a JSONata expression that describes the structure of the data in the file.
+        It is used to transform the data into a JSON format.
+        (If empty, the data will be converted to JSON Lines without transformation)
+        """,
+    )
 
     if st.button("Convert to JSON"):
-        csv_data = to_csv(df, row_schema)
-        if csv_data:
-            preview_data(csv_data)
+        json_data = to_json(df, row_schema)
+        if json_data:
+            preview_data(json_data)
 
             # Add download button
             st.download_button(
-                label="Download CSV",
-                data=csv_data,
-                file_name="transformed_data.csv",
-                mime="text/csv",
+                label="Download JSON",
+                data=json_data,
+                file_name="transformed_data.json",
+                mime="application/json",
             )
