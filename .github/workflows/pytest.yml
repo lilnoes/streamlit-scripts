@@ -8,8 +8,6 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      POETRY_VERSION: 2.0.0
 
     steps:
       - uses: actions/checkout@v3
@@ -19,14 +17,10 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Poetry
-        run: |
-          curl -sSL https://install.python-poetry.org | POETRY_VERSION=$POETRY_VERSION python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: |
-          poetry install --with dev
+      - name: Setup Poetry and install dependencies
+        uses: ../actions/setup-env
+        with:
+          poetry-version: 2.0.0
 
       - name: Test with pytest
         run: |

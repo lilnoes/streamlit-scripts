@@ -1,0 +1,21 @@
+name: 'Setup Poetry and Install Dependencies'
+description: 'Set up Poetry and install project dependencies'
+inputs:
+  poetry-version:
+    description: 'Poetry version to install'
+    required: true
+    default: '2.0.0'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Poetry
+      shell: bash
+      run: |
+        curl -sSL https://install.python-poetry.org | POETRY_VERSION=${{ inputs.poetry-version }} python3 -
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Install dependencies
+      shell: bash
+      run: |
+        poetry install --with dev
