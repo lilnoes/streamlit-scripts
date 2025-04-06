@@ -2,6 +2,10 @@ import pandas as pd
 import pytest
 from unittest.mock import patch
 from covert.scripts.files_processing.remove_tasks_by_key import remove_tasks
+from covert.scripts.files_processing.remove_tasks_by_key import (
+    main as remove_tasks_main,
+)
+from streamlit.testing.v1 import AppTest
 
 
 @pytest.fixture
@@ -14,6 +18,12 @@ def sample_df():
         {"id": "task4", "content": "Fourth task", "metadata": {"uuid": "uuid4"}},
     ]
     return pd.DataFrame(data)
+
+
+def test_remove_tasks_main():
+    app = AppTest.from_function(remove_tasks_main)
+    app.run()
+    assert True
 
 
 @patch("streamlit.warning")
