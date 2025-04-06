@@ -50,7 +50,7 @@ def main():
         help="""
         The row schema is a JSONata expression that describes the structure of the data in the file.
         It is used to transform the data into a CSV format.
-        (If empty, the data will be converted to a CSV without transformation)
+        (If empty, the data will be converted to a CSV without transformation) 
         """,
     )
 
