@@ -2,9 +2,6 @@ import pandas as pd
 import pytest
 from unittest.mock import patch
 from covert.scripts.files_processing.remove_tasks_by_key import remove_tasks
-from covert.scripts.files_processing.remove_tasks_by_key import (
-    main as remove_tasks_main,
-)
 from streamlit.testing.v1 import AppTest
 
 
@@ -27,11 +24,26 @@ def test_remove_tasks_main(sample_df):
     app.session_state.df = sample_df
     app.run()
     app.selectbox[0].select("id")
-    app.text_area[0].write("task1\ntask3").run()
-    button = [button for button in app.button if button.text == "Remove Tasks"][0]
-    button.click().run()
+    app.text_area[0].input("task1\ntask3").run()
+
+    # Remove tasks
+    [button for button in app.button if button.label == "Remove Tasks"][0].click().run()
+
+    # Save filtered file
+    [button for button in app.button if button.label == "Save Filtered File"][
+        0
+    ].click().run()
+
+    # Check that the filtered file has the correct rows
+    filtered_df = app.session_state.df
+    assert len(filtered_df) == 2
+    assert "task1" not in filtered_df["id"].values
+    assert "task3" not in filtered_df["id"].values
+    assert "task2" in filtered_df["id"].values
+    assert "task4" in filtered_df["id"].values
 
 
+@patch("streamlit.warning")
 @patch("streamlit.toast")
 def test_remove_tasks_with_direct_key(mock_toast, mock_warning, sample_df):
     """Test removing tasks using a direct (non-nested) key."""
