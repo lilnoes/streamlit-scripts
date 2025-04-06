@@ -111,3 +111,7 @@ def main():
         data_preview_fragment(filtered_df)
 
         download_fragment(filtered_df, jsonl_data)
+
+
+if __name__ == "__main__":
+    main()

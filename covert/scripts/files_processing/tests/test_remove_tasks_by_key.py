@@ -20,13 +20,18 @@ def sample_df():
     return pd.DataFrame(data)
 
 
-def test_remove_tasks_main():
-    app = AppTest.from_function(remove_tasks_main)
+def test_remove_tasks_main(sample_df):
+    app = AppTest.from_file(
+        "covert/scripts/files_processing/remove_tasks_by_key.py"
+    ).run()
+    app.session_state.df = sample_df
     app.run()
-    assert True
+    app.selectbox[0].select("id")
+    app.text_area[0].write("task1\ntask3").run()
+    button = [button for button in app.button if button.text == "Remove Tasks"][0]
+    button.click().run()
 
 
-@patch("streamlit.warning")
 @patch("streamlit.toast")
 def test_remove_tasks_with_direct_key(mock_toast, mock_warning, sample_df):
     """Test removing tasks using a direct (non-nested) key."""
