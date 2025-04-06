@@ -15,8 +15,7 @@ class ReferenceFile(BaseModel):
     name: str
     duplicates: set[str] = set()
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = {"arbitrary_types_allowed": True}
 
 
 def append_file(file: ReferenceFile, unique_key: str):
