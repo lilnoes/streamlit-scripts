@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import io
-import json
 
 from covert.common.data_preview import data_preview
 from covert.utils.transform import transform_data
