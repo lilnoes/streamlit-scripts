@@ -1,14 +1,19 @@
-name: 'Setup Poetry and Install Dependencies'
-description: 'Set up Poetry and install project dependencies'
+name: "Setup Poetry and Install Dependencies"
+description: "Set up Poetry and install project dependencies"
 inputs:
   poetry-version:
-    description: 'Poetry version to install'
+    description: "Poetry version to install"
     required: true
-    default: '2.0.0'
+    default: "2.0.0"
 
 runs:
   using: "composite"
   steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
     - name: Install Poetry
       shell: bash
       run: |
