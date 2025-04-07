@@ -18,7 +18,7 @@ jobs:
           poetry-version: 2.0.0
 
       - name: Test with pytest
-        run: poetry run pytest
+        run: poetry run pytest || echo "PYTEST_FAILED=true" >> $GITHUB_ENV
         continue-on-error: true
 
       - name: Upload coverage reports to Codecov
@@ -27,3 +27,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
+
+      - name: Fail workflow if pytest failed
+        if: env.PYTEST_FAILED == 'true'
+        run: exit 1
