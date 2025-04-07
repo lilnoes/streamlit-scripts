@@ -6,3 +6,5 @@ __pycache__
 *.json
 *.jsonl
 *.csv
+.coverage
+coverage.xml
