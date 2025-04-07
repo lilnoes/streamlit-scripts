@@ -1,8 +1,0 @@
-antlr4-python3-runtime==4.11.0
-lark==1.2.2
-pylatexenc==2.10
-numpy==2.2.4
-pandas==2.2.3
-streamlit==1.43.2
-sympy==1.13.3
-jsonata-python==0.5.3
