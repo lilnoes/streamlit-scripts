@@ -48,7 +48,6 @@ def main():
     st.divider()
 
     df = st.session_state.df
-    original_df = st.session_state.original_df
 
     data_preview(df)
 
@@ -83,3 +82,7 @@ def main():
             file_name="extracted_tasks.jsonl",
             mime="application/jsonl",
         )
+
+
+if __name__ == "__main__":
+    main()

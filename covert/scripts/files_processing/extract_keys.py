@@ -130,3 +130,7 @@ def main():
             st.warning("Please select at least one key to extract")
         else:
             extracted_preview(df, extraction_keys)
+
+
+if __name__ == "__main__":
+    main()

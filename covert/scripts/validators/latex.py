@@ -1,8 +1,5 @@
 import streamlit as st
 import pandas as pd
-import jsonata
-import io
-import csv
 
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
@@ -54,6 +51,8 @@ def preview_errors(errors, parse_type: ParseType = ParseType.SYMPY_ANTLR):
     items_per_page = 10
     total_pages = (len(errors) + items_per_page - 1) // items_per_page
 
+    page = st.session_state.get("error_page", 1)
+
     start_idx = (page - 1) * items_per_page
     end_idx = min(start_idx + items_per_page, len(errors))
 
@@ -61,7 +60,7 @@ def preview_errors(errors, parse_type: ParseType = ParseType.SYMPY_ANTLR):
     for index, item in enumerate(errors[start_idx:end_idx]):
         with st.expander(f"ID: {item['id']} - {item['error_count']} errors"):
             for i, error in enumerate(item["faulty_expressions"]):
-                st.markdown(f"**Error {i+1}:**")
+                st.markdown(f"**Error {i + 1}:**")
                 latex_expression_editor(
                     error["expression"],
                     error["error"],
@@ -183,3 +182,7 @@ def main():
         errors = get_errors(df, id_key, validation_keys, parse_type)
         st.write(f"Errors: {len(errors)}/{len(df)}")
         preview_errors(errors, parse_type)
+
+
+if __name__ == "__main__":
+    main()

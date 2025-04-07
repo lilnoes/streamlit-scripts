@@ -32,3 +32,7 @@ def main():
 
     if st.button("Get summary"):
         get_summary(df)
+
+
+if __name__ == "__main__":
+    main()

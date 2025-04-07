@@ -157,3 +157,7 @@ def main():
         st.session_state.df = df[mask]
         st.success(f"Removed {len(all_duplicates)} duplicate values")
         st.rerun()
+
+
+if __name__ == "__main__":
+    main()

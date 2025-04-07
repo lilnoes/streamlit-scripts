@@ -82,3 +82,7 @@ def main():
                 mime="application/jsonl",
                 key=f"download_{category_name}",
             )
+
+
+if __name__ == "__main__":
+    main()

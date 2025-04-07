@@ -73,3 +73,7 @@ def main():
         to_jsonl()
     else:
         st.error(f"Conversion not supported: {chosen_file_type} -> {convert_to}")
+
+
+if __name__ == "__main__":
+    main()
