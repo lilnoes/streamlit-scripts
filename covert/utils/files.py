@@ -1,6 +1,6 @@
 import re
 import pandas as pd
-from io import BytesIO, StringIO
+from io import BytesIO
 
 from covert.scripts.types.file_types import FileType
 

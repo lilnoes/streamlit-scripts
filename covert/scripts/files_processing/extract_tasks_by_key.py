@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
