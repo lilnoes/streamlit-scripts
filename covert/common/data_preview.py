@@ -2,7 +2,12 @@ import streamlit as st
 
 
 def data_previewer(
-    total_size, get_page_data, page_size=50, prefix_key="", render_fn=st.dataframe
+    total_size,
+    get_page_data,
+    page_size=50,
+    prefix_key="",
+    title="Data Preview",
+    render_fn=st.dataframe,
 ):
     """
     Generic data preview component with pagination
@@ -26,7 +31,7 @@ def data_previewer(
     start_idx = page * page_size
     end_idx = min(start_idx + page_size, total_size)
 
-    with st.expander("Data Preview"):
+    with st.expander(title):
         # Get and display the data for current page
         current_page_data = get_page_data(start_idx, end_idx)
         render_fn(current_page_data)
@@ -56,7 +61,7 @@ def data_previewer(
             )
 
 
-def data_preview(df, page_size=50, prefix_key=""):
+def data_preview(df, page_size=50, prefix_key="", title="Data Preview"):
     """Legacy function that uses data_previewer for DataFrame pagination"""
     if df.empty:
         return
@@ -65,4 +70,5 @@ def data_preview(df, page_size=50, prefix_key=""):
         get_page_data=lambda start, end: df.iloc[start:end],
         page_size=page_size,
         prefix_key=prefix_key,
+        title=title,
     )

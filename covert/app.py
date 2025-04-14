@@ -54,6 +54,13 @@ pages_list: list[CustomPage] = [
         category="Files Processing",
     ),
     CustomPage(
+        title="Diff Files",
+        icon=":material/arrow_back_ios:",
+        url_path="/files-processing-diff_files",
+        script="scripts/files_processing/diff_files.py",
+        category="Files Processing",
+    ),
+    CustomPage(
         title="Duplicates Remover",
         icon=":material/arrow_back_ios:",
         url_path="/files-processing-duplicates_remover",
@@ -84,7 +91,7 @@ pages = {
         for page in pages_list
         if page.category == category
     ]
-    for category in categories
+    for category in sorted(categories)
 }
 
 st.sidebar.title("Covert Exports")
