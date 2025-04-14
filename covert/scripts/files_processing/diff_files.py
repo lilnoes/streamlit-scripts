@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import streamlit as st
 import pandas as pd
 from itertools import chain
+import difflib
 
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
@@ -153,8 +154,16 @@ def main():
     st.divider()
 
     if st.button("Compare files"):
-        diff_result = compare_dataframes(df1, df2, file1_key, file2_key)
-        diff_files_fragment(diff_result)
+        lhs_values = sorted(
+            [get_nested_value(item, file1_key) for item in df1.to_dict("records")]
+        )
+        rhs_values = sorted(
+            [get_nested_value(item, file2_key) for item in df2.to_dict("records")]
+        )
+        html_diff = difflib.HtmlDiff().make_file(lhs_values, rhs_values)
+        st.html(html_diff)
+        # diff_result = compare_dataframes(df1, df2, file1_key, file2_key)
+        # diff_files_fragment(diff_result)
 
 
 if __name__ == "__main__":
