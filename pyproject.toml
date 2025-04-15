@@ -15,6 +15,8 @@ streamlit = "1.44.0"
 ydata-profiling = "4.16.1"
 setuptools = "^78.1.0"
 pytest-cov = "^6.1.1"
+genson = "^1.3.0"
+jsonschema = "^4.23.0"
 
 
 [tool.pytest.ini_options]

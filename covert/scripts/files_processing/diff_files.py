@@ -161,9 +161,10 @@ def main():
             [get_nested_value(item, file2_key) for item in df2.to_dict("records")]
         )
         html_diff = difflib.HtmlDiff().make_file(lhs_values, rhs_values)
-        st.html(html_diff)
-        # diff_result = compare_dataframes(df1, df2, file1_key, file2_key)
-        # diff_files_fragment(diff_result)
+        with st.expander("Diff"):
+            st.html(html_diff)
+        diff_result = compare_dataframes(df1, df2, file1_key, file2_key)
+        diff_files_fragment(diff_result)
 
 
 if __name__ == "__main__":

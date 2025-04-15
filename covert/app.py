@@ -81,6 +81,13 @@ pages_list: list[CustomPage] = [
         script="scripts/validators/profiler.py",
         category="Validators",
     ),
+    CustomPage(
+        title="Schema Validator",
+        icon=":material/arrow_back_ios:",
+        url_path="/validators-schema",
+        script="scripts/validators/schema_validator.py",
+        category="Validators",
+    ),
 ]
 
 categories = set([page.category for page in pages_list])
