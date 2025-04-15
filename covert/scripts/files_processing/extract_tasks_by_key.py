@@ -2,34 +2,59 @@ import streamlit as st
 
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
-from covert.common.download_url import download_from_url
 from covert.utils.dataframes import get_keys, get_nested_value
+import pandas as pd
 
 
-def extract_tasks_callback(ids_to_extract, id_key):
+def save_extracted_file_callback(df: pd.DataFrame):
+    st.session_state.df = df
+    st.toast("Extracted file saved")
+
+
+@st.fragment
+def download_fragment(extracted_df: pd.DataFrame):
+    jsonl_data = extracted_df.to_json(orient="records", lines=True)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.button(
+            "Save Extracted File",
+            on_click=save_extracted_file_callback,
+            args=(extracted_df,),
+            help="Save the extracted file for future use",
+        )
+    with col2:
+        st.download_button(
+            label="Download JSONL",
+            data=jsonl_data,
+            file_name="extracted_tasks.jsonl",
+            mime="application/jsonl",
+        )
+
+
+@st.fragment
+def data_preview_fragment(df: pd.DataFrame):
+    st.header("Preview of extracted data:")
+    data_preview(df, prefix_key="extract_tasks_by_key")
+
+
+def extract_tasks(
+    df: pd.DataFrame, ids_to_extract: list[str], id_key: str
+) -> pd.DataFrame:
     if not ids_to_extract:
         st.warning("Please enter at least one ID to extract.")
-        return
+        return df
 
-    df = st.session_state.df
-
-    # Filter rows where the key (nested or direct) matches any ID in the list
-    filtered_df = df[
+    # Extract rows where the key (nested or direct) matches any ID in the list
+    extracted_df = df[
         df.apply(
             lambda row: get_nested_value(row.to_dict(), id_key) in ids_to_extract,
             axis=1,
         )
     ]
+    message = f"Entered {len(ids_to_extract)} IDs to extract. Extracted {len(extracted_df)} tasks"
+    st.toast(message)
 
-    # Count extracted items
-    extracted_count = len(filtered_df)
-
-    # Update session state
-    st.session_state.df = filtered_df
-
-    st.toast(
-        f"Entered {len(ids_to_extract)} IDs to extract. Extracted {extracted_count} tasks."
-    )
+    return extracted_df
 
 
 def restore_original_file_callback():
@@ -43,7 +68,6 @@ def main():
     st.markdown("")
 
     upload_file("Choose a file (JSONL)")
-    download_from_url("Download from URL (optional)", "Download from URL")
 
     st.divider()
 
@@ -60,28 +84,12 @@ def main():
     ids_to_extract = ids_to_extract_text.split("\n")
     ids_to_extract = [id.strip() for id in ids_to_extract if id.strip()]
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.button(
-            "Extract Tasks",
-            on_click=extract_tasks_callback,
-            args=(ids_to_extract, id_key),
-        )
+    if st.button("Extract Tasks"):
+        extracted_df = extract_tasks(df, ids_to_extract, id_key)
+        data_preview_fragment(extracted_df)
+        download_fragment(extracted_df)
 
-    with col2:
-        st.button("Restore Original file", on_click=restore_original_file_callback)
-
-    if not df.empty and st.button("Download Extracted Data"):
-        # Convert DataFrame to JSONL
-        jsonl_data = df.to_json(orient="records", lines=True)
-
-        # Provide download button
-        st.download_button(
-            label="Download JSONL",
-            data=jsonl_data,
-            file_name="extracted_tasks.jsonl",
-            mime="application/jsonl",
-        )
+    st.button("Restore Original file", on_click=restore_original_file_callback)
 
 
 if __name__ == "__main__":

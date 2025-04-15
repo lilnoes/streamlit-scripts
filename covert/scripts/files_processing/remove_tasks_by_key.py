@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from covert.common.data_preview import data_preview
 from covert.common.upload_file import upload_file
-from covert.common.download_url import download_from_url
 from covert.utils.dataframes import get_keys, get_nested_value
 
 
@@ -85,7 +84,6 @@ def main():
         )
 
     upload_file("Choose a file (JSONL)")
-    download_from_url("Download from URL (optional)", "Download from URL")
 
     st.divider()
 
@@ -102,8 +100,6 @@ def main():
     ids_to_remove = ids_to_remove_text.split("\n")
     ids_to_remove = [id.strip() for id in ids_to_remove if id.strip()]
 
-    st.button("Restore Original file", on_click=restore_original_file_callback)
-
     if not df.empty and st.button("Remove Tasks"):
         filtered_df = remove_tasks(df, ids_to_remove, id_key)
         jsonl_data = filtered_df.to_json(orient="records", lines=True)
@@ -111,6 +107,8 @@ def main():
         data_preview_fragment(filtered_df)
 
         download_fragment(filtered_df, jsonl_data)
+
+    st.button("Restore Original file", on_click=restore_original_file_callback)
 
 
 if __name__ == "__main__":

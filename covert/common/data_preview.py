@@ -60,6 +60,12 @@ def data_previewer(
                 key=f"{prefix_key}_next",
             )
 
+        if st.checkbox("Show Row Previewer", key=f"{prefix_key}_row_previewer"):
+            index = st.selectbox(
+                "Select Row", range(len(current_page_data)), key=f"{prefix_key}_index"
+            )
+            st.json(current_page_data.iloc[index].to_dict())
+
 
 def data_preview(df, page_size=50, prefix_key="", title="Data Preview"):
     """Legacy function that uses data_previewer for DataFrame pagination"""
