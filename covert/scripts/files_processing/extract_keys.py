@@ -1,3 +1,4 @@
+from itertools import chain
 import streamlit as st
 import pandas as pd
 
@@ -28,17 +29,9 @@ def extracted_preview(df: pd.DataFrame, extraction_keys: list[str]):
         st.code(json_data, language="json")
 
     with st.expander("Python List Format"):
+        python_list = extracted_df.values.tolist()
         if len(extraction_keys) == 1:
-            values = [
-                f'"{value}"' for value in extracted_df[extraction_keys[0]].tolist()
-            ]
-            python_list = "[\n    " + ",\n    ".join(values) + "\n]"
-        else:
-            rows = []
-            for _, row in extracted_df.iterrows():
-                values = [f'"{row[key]}"' for key in extraction_keys]
-                rows.append("[" + ", ".join(values) + "]")
-            python_list = "[\n    " + ",\n    ".join(rows) + "\n]"
+            python_list = list(chain.from_iterable(python_list))
         st.code(python_list, language="python")
 
     # Download options
