@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "covert"
+version = "0.1.0"
+description = "description"
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+antlr4-python3-runtime = "4.11.0"
+sympy = "1.13.3"
+authlib = "^1.5.1"
+jsonata-python = "0.5.3"
+lark = "1.2.2"
+pylatexenc = "2.10"
+streamlit = "1.44.0"
+ydata-profiling = "4.16.1"
+setuptools = "^78.1.0"
+pytest-cov = "^6.1.1"
+genson = "1.3.0"
+jsonschema = "4.23.0"
+
+
+[tool.pytest.ini_options]
+addopts = ["--cov", "--cov-report=xml", "-p no:warnings"]
+norecursedirs = [".git", "venv", "env", "dist", "build", ".venv"]
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+pythonpath = ["covert"]
+
+
+[tool.coverage.run]
+branch = true
+source = ["covert"]
+omit = ["*/.venv/*", "*/tests/*", "*/__init__.py", "*/config.py"]
+parallel = true
+
+
+[tool.coverage.plugins]
+conditional = "coverage_conditional_plugin"
+
+[tool.coverage.report]
+fail_under = 70
+precision = 2
+show_missing = true
+skip_covered = true
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

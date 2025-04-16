@@ -1,4 +1,10 @@
 .venv
 __pycache__
+.pytest_cache/
 .streamlit/secrets.toml
 .DS_Store
+*.json
+*.jsonl
+*.csv
+.coverage
+coverage.xml
