@@ -88,6 +88,13 @@ pages_list: list[CustomPage] = [
         script="scripts/validators/schema_validator.py",
         category="Validators",
     ),
+    CustomPage(
+        title="Extract UUIDs",
+        icon=":material/arrow_back_ios:",
+        url_path="/string-processing-extract_ids",
+        script="scripts/string_processing/extract_ids.py",
+        category="String Processing",
+    ),
 ]
 
 categories = set([page.category for page in pages_list])
