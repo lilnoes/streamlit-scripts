@@ -1,14 +1,16 @@
 import streamlit as st
 import pandas as pd
 
+from covert.utils.files import get_df
+
 
 def update_state_callback(
-    session_state_key: str, key: str, original_key: str, file_type: str
+    session_state_key: str, key: str, original_key: str, file_type: list[str]
 ):
     uploaded_file = st.session_state[key]
     if not uploaded_file:
         return
-    df = pd.read_json(uploaded_file, lines=True, dtype=object, convert_dates=False)
+    df = get_df(uploaded_file.getvalue(), uploaded_file.name)
     st.session_state[session_state_key] = df
     st.session_state[original_key] = df.copy()
 
@@ -18,7 +20,7 @@ def upload_file(
     session_state_key: str = "df",
     key: str = "upload_file",
     original_key: str = "original_df",
-    file_type: str = "jsonl",
+    file_type: list[str] = ["jsonl"],
 ):
     st.file_uploader(
         file_text,

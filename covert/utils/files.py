@@ -63,8 +63,8 @@ def read(data: bytes | str, file_type: FileType, **kwargs) -> pd.DataFrame:
 def read_csv(data: bytes | str) -> pd.DataFrame:
     """Read CSV bytes into a DataFrame."""
     if isinstance(data, str):
-        return pd.read_csv(data)
-    return pd.read_csv(BytesIO(data))
+        return pd.read_csv(data, parse_dates=False)
+    return pd.read_csv(BytesIO(data), parse_dates=False)
 
 
 def read_json(data: bytes | str, orient: str = "records") -> pd.DataFrame:
@@ -79,8 +79,8 @@ def read_json(data: bytes | str, orient: str = "records") -> pd.DataFrame:
         pd.DataFrame: Parsed data
     """
     if isinstance(data, str):
-        return pd.read_json(data, orient=orient)
-    return pd.read_json(BytesIO(data), orient=orient)
+        return pd.read_json(data, orient=orient, convert_dates=False)
+    return pd.read_json(BytesIO(data), orient=orient, convert_dates=False)
 
 
 def read_jsonl(data: bytes | str) -> pd.DataFrame:
@@ -94,5 +94,5 @@ def read_jsonl(data: bytes | str) -> pd.DataFrame:
         pd.DataFrame: Parsed data
     """
     if isinstance(data, str):
-        return pd.read_json(data, lines=True)
-    return pd.read_json(BytesIO(data), lines=True)
+        return pd.read_json(data, lines=True, convert_dates=False)
+    return pd.read_json(BytesIO(data), lines=True, convert_dates=False)

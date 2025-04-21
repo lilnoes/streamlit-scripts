@@ -81,7 +81,7 @@ def main():
     # generate a helper text here
     st.markdown("")
 
-    upload_file("Choose a file (JSONL)")
+    upload_file("Choose a file (JSONL)", file_type=["jsonl", "csv", "json"])
     download_from_url("Download from URL (optional)", "Download from URL")
 
     if "rename_mapping" not in st.session_state:

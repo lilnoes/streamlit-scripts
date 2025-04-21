@@ -6,6 +6,7 @@ def test_upload_file():
 
     # Define test app that uses the original function with patched uploader
     def test_app():
+        from unittest.mock import Mock
         from covert.common.upload_file import upload_file
         from unittest.mock import patch
         import streamlit as st
@@ -17,7 +18,9 @@ def test_upload_file():
                 # Create mock JSONL data
                 mock_data = [{"id": 1, "name": "test1"}, {"id": 2, "name": "test2"}]
                 jsonl_string = "\n".join(json.dumps(item) for item in mock_data)
-                mock_file = io.BytesIO(jsonl_string.encode())
+                mock_file = Mock
+                mock_file.getvalue = lambda: jsonl_string.encode()
+                mock_file.name = "test.jsonl"
 
                 st.session_state[key] = mock_file
 
