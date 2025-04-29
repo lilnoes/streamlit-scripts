@@ -127,7 +127,12 @@ def main():
         )
 
     with st.expander("File 2"):
-        upload_file("Choose a file (JSONL)", "df2", "upload_file_2")
+        upload_file(
+            "Choose a file (JSONL)",
+            "df2",
+            "upload_file_2",
+            file_type=["jsonl", "csv", "json"],
+        )
         download_from_url(
             "Download from URL (optional)",
             "Download from URL",
