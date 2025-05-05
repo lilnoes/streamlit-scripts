@@ -95,6 +95,13 @@ pages_list: list[CustomPage] = [
         script="scripts/string_processing/extract_ids.py",
         category="String Processing",
     ),
+    CustomPage(
+        title="Convert dictionary to JSON",
+        icon=":material/arrow_back_ios:",
+        url_path="/string-processing-dict_to_json",
+        script="scripts/string_processing/dict_to_json.py",
+        category="String Processing",
+    ),
 ]
 
 categories = set([page.category for page in pages_list])
