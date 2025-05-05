@@ -62,8 +62,10 @@ def main():
     st.button("Add item", on_click=add_item, args=[state])
 
     if st.button("Convert to JSON"):
-        json_string = json.dumps([item.model_dump() for item in state.items])
-        st.code(f"'{json_string}'")
+        json_string = json.dumps(
+            {item.key: item.value for item in state.items if item.key and item.value}
+        )
+        st.code(json_string)
 
 
 if __name__ == "__main__":
